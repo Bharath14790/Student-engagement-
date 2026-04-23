@@ -14,7 +14,7 @@ from sklearn.metrics import (classification_report, confusion_matrix,
 import warnings
 warnings.filterwarnings('ignore')
 
-# ── Style ──────────────────────────────────────────────────────────────────────
+
 plt.rcParams.update({
     'figure.facecolor': 'white',
     'axes.facecolor': '#f8f9fc',
@@ -36,15 +36,12 @@ df = pd.read_csv('/home/claude/student_data.csv')
 df['Placed'] = (df['Placement_Status'] == 'Placed').astype(int)
 print("Dataset loaded:", df.shape)
 
-# ══════════════════════════════════════════════════════════════════════════════
-# FIGURE 1 – Dataset Overview & EDA
-# ══════════════════════════════════════════════════════════════════════════════
 fig = plt.figure(figsize=(20, 16))
 fig.suptitle('Figure 1 – Dataset Overview & Exploratory Data Analysis',
              fontsize=16, fontweight='bold', color=NAVY, y=0.98)
 gs = gridspec.GridSpec(3, 4, figure=fig, hspace=0.45, wspace=0.38)
 
-# 1a. Placement distribution
+
 ax = fig.add_subplot(gs[0, 0])
 counts = df['Placement_Status'].value_counts()
 bars = ax.bar(counts.index, counts.values, color=[GREEN, ORG], edgecolor='white', linewidth=1.5, width=0.5)
@@ -54,14 +51,14 @@ for b in bars:
 ax.set_title('Placement Distribution', fontweight='bold', color=NAVY)
 ax.set_ylabel('Count')
 
-# 1b. Dept distribution
+
 ax = fig.add_subplot(gs[0, 1])
 dept_counts = df['Department'].value_counts()
 ax.barh(dept_counts.index, dept_counts.values, color=PAL[:len(dept_counts)], edgecolor='white')
 ax.set_title('Students by Department', fontweight='bold', color=NAVY)
 ax.set_xlabel('Count')
 
-# 1c. CGPA distribution by placement
+
 ax = fig.add_subplot(gs[0, 2])
 for label, grp in df.groupby('Placement_Status'):
     ax.hist(grp['CGPA'], bins=15, alpha=0.7, label=label,
@@ -69,7 +66,7 @@ for label, grp in df.groupby('Placement_Status'):
 ax.set_title('CGPA Distribution', fontweight='bold', color=NAVY)
 ax.set_xlabel('CGPA'); ax.legend(fontsize=9)
 
-# 1d. Attendance distribution
+
 ax = fig.add_subplot(gs[0, 3])
 for label, grp in df.groupby('Placement_Status'):
     ax.hist(grp['Attendance_%'], bins=15, alpha=0.7, label=label,
@@ -77,7 +74,7 @@ for label, grp in df.groupby('Placement_Status'):
 ax.set_title('Attendance % Distribution', fontweight='bold', color=NAVY)
 ax.set_xlabel('Attendance %'); ax.legend(fontsize=9)
 
-# 1e. Placement rate by dept
+
 ax = fig.add_subplot(gs[1, :2])
 dept_place = df.groupby('Department')['Placed'].mean().sort_values(ascending=False) * 100
 bars = ax.bar(dept_place.index, dept_place.values, color=PAL[:len(dept_place)], edgecolor='white')
@@ -87,7 +84,7 @@ for b in bars:
 ax.set_title('Placement Rate by Department', fontweight='bold', color=NAVY)
 ax.set_ylabel('Placement Rate (%)'); ax.set_ylim(0, 110)
 
-# 1f. Placement rate by college tier
+
 ax = fig.add_subplot(gs[1, 2])
 tier_place = df.groupby('College_Tier')['Placed'].mean() * 100
 ax.bar([f'Tier {t}' for t in tier_place.index], tier_place.values,
@@ -97,7 +94,7 @@ for i, v in enumerate(tier_place.values):
 ax.set_title('Placement by College Tier', fontweight='bold', color=NAVY)
 ax.set_ylabel('Placement Rate (%)'); ax.set_ylim(0, 110)
 
-# 1g. Gender placement
+
 ax = fig.add_subplot(gs[1, 3])
 gen_place = df.groupby('Gender')['Placed'].mean() * 100
 ax.bar(gen_place.index, gen_place.values, color=[BLUE, ORG], edgecolor='white', width=0.4)
@@ -106,7 +103,7 @@ for i, v in enumerate(gen_place.values):
 ax.set_title('Placement by Gender', fontweight='bold', color=NAVY)
 ax.set_ylabel('Placement Rate (%)'); ax.set_ylim(0, 110)
 
-# 1h. Missing values check
+
 ax = fig.add_subplot(gs[2, :2])
 missing = df.isnull().sum()
 missing = missing[missing > 0]
@@ -118,7 +115,7 @@ if len(missing) == 0:
 ax.set_title('Missing Value Analysis', fontweight='bold', color=NAVY)
 ax.axis('off') if len(missing)==0 else None
 
-# 1i. Descriptive stats table
+
 ax = fig.add_subplot(gs[2, 2:])
 stats_cols = ['CGPA','Attendance_%','Avg_Quiz_Score','Engagement_Score','Doubts_Raised']
 stats_df = df[stats_cols].describe().round(2).loc[['mean','std','min','max']]
@@ -140,15 +137,13 @@ plt.savefig('/home/claude/fig1_eda.png', dpi=150, bbox_inches='tight')
 plt.close()
 print("Fig1 done")
 
-# ══════════════════════════════════════════════════════════════════════════════
-# FIGURE 2 – Engagement Analysis
-# ══════════════════════════════════════════════════════════════════════════════
+
 fig, axes = plt.subplots(3, 3, figsize=(18, 15))
 fig.suptitle('Figure 2 – Deep Engagement Analysis: Behavior vs Placement',
              fontsize=16, fontweight='bold', color=NAVY)
 plt.subplots_adjust(hspace=0.4, wspace=0.35)
 
-# 2a. Attendance bucket vs placement rate
+
 ax = axes[0,0]
 df['Att_Bucket'] = pd.cut(df['Attendance_%'], bins=[0,60,80,100],
                            labels=['<60%','60–80%','>80%'])
@@ -162,7 +157,7 @@ ax.set_title('Attendance vs Placement Rate', fontweight='bold', color=NAVY)
 ax.set_ylabel('Placement Rate (%)'); ax.set_ylim(0, 110)
 ax.set_xlabel('Attendance Bucket')
 
-# 2b. Login frequency vs placement
+
 ax = axes[0,1]
 login_place = df.groupby('Login_Frequency')['Placed'].mean() * 100
 ax.bar(login_place.index, login_place.values, color=NAVY, edgecolor='white')
@@ -170,7 +165,7 @@ ax.plot(login_place.index, login_place.values, 'o-', color=ORG, linewidth=2, mar
 ax.set_title('Login Frequency vs Placement', fontweight='bold', color=NAVY)
 ax.set_xlabel('Logins per Week'); ax.set_ylabel('Placement Rate (%)')
 
-# 2c. Time spent vs placement
+
 ax = axes[0,2]
 df['Time_Bucket'] = pd.cut(df['Time_Spent_Hours'], bins=[0,5,15,30,50],
                             labels=['<5 hrs','5-15 hrs','15-30 hrs','>30 hrs'])
@@ -183,7 +178,7 @@ for b in ax.patches:
 ax.set_title('Time Spent vs Placement', fontweight='bold', color=NAVY)
 ax.set_ylabel('Placement Rate (%)'); ax.set_ylim(0, 110)
 
-# 2d. Quiz score distribution
+
 ax = axes[1,0]
 for label, grp in df.groupby('Placement_Status'):
     ax.hist(grp['Avg_Quiz_Score'], bins=20, alpha=0.7, label=label,
@@ -195,7 +190,7 @@ ax.axvline(df[df['Placed']==0]['Avg_Quiz_Score'].mean(), color=ORG,
 ax.set_title('Quiz Score Distribution by Placement', fontweight='bold', color=NAVY)
 ax.set_xlabel('Quiz Score'); ax.legend(fontsize=8)
 
-# 2e. Video completion vs placement
+
 ax = axes[1,1]
 df['Vid_Bucket'] = pd.cut(df['Video_Completion_%'], bins=[0,50,80,100],
                            labels=['<50%','50–80%','>80%'])
@@ -207,7 +202,7 @@ for b in ax.patches:
 ax.set_title('Video Completion vs Placement', fontweight='bold', color=NAVY)
 ax.set_ylabel('Placement Rate (%)'); ax.set_ylim(0, 110)
 
-# 2f. Doubts raised vs placement
+
 ax = axes[1,2]
 df['Doubt_Cat'] = pd.cut(df['Doubts_Raised'], bins=[-1,0,4,100],
                           labels=['No Doubts','Some Doubts','Active Doubts'])
@@ -219,7 +214,7 @@ for b in ax.patches:
 ax.set_title('Doubt Behavior vs Placement', fontweight='bold', color=NAVY)
 ax.set_ylabel('Placement Rate (%)'); ax.set_ylim(0, 110)
 
-# 2g. Event participation vs placement
+
 ax = axes[2,0]
 event_place = df.groupby('Hackathons_Attended')['Placed'].mean() * 100
 ax.bar(event_place.index, event_place.values, color=NAVY, edgecolor='white')
@@ -227,7 +222,7 @@ ax.plot(event_place.index, event_place.values, 's-', color=ORG, linewidth=2, mar
 ax.set_title('Hackathons Attended vs Placement', fontweight='bold', color=NAVY)
 ax.set_xlabel('Hackathons'); ax.set_ylabel('Placement Rate (%)')
 
-# 2h. Engagement score vs placement — boxplot
+
 ax = axes[2,1]
 placed_eng = df[df['Placed']==1]['Engagement_Score']
 notplaced_eng = df[df['Placed']==0]['Engagement_Score']
@@ -239,7 +234,7 @@ for cap in bp['caps']: cap.set_color(NAVY)
 ax.set_title('Engagement Score by Placement', fontweight='bold', color=NAVY)
 ax.set_ylabel('Engagement Score')
 
-# 2i. Correlation: engagement score vs CGPA colored by placement
+
 ax = axes[2,2]
 for label, grp in df.groupby('Placement_Status'):
     c = GREEN if label=='Placed' else ORG
@@ -253,14 +248,12 @@ plt.savefig('/home/claude/fig2_engagement.png', dpi=150, bbox_inches='tight')
 plt.close()
 print("Fig2 done")
 
-# ══════════════════════════════════════════════════════════════════════════════
-# FIGURE 3 – Correlation Heatmap + Student Segmentation
-# ══════════════════════════════════════════════════════════════════════════════
+
 fig, axes = plt.subplots(1, 2, figsize=(20, 9))
 fig.suptitle('Figure 3 – Correlation Analysis & Student Segmentation',
              fontsize=16, fontweight='bold', color=NAVY)
 
-# 3a. Heatmap
+
 num_cols = ['Attendance_%','Login_Frequency','Time_Spent_Hours',
             'Video_Completion_%','Avg_Quiz_Score','Doubts_Raised',
             'Hackathons_Attended','Engagement_Score','CGPA','Placed']
@@ -273,7 +266,7 @@ sns.heatmap(corr, mask=mask, ax=axes[0], annot=True, fmt='.2f',
 axes[0].set_title('Correlation Heatmap – Key Features', fontweight='bold', color=NAVY, pad=12)
 axes[0].tick_params(axis='x', rotation=45)
 
-# 3b. Student Segmentation
+
 def segment(row):
     if row['Engagement_Score'] >= 65 and row['Avg_Quiz_Score'] >= 65 and row['Doubts_Raised'] >= 3:
         return 'High Performer'
@@ -295,7 +288,7 @@ wedges, texts, autotexts = axes[1].pie(
 for at in autotexts: at.set_fontsize(10); at.set_fontweight('bold')
 axes[1].set_title('Student Segmentation\n(Based on Engagement Rules)', fontweight='bold', color=NAVY)
 
-# Segment placement table
+
 seg_place = df.groupby('Segment')['Placed'].mean() * 100
 inset = axes[1].inset_axes([0.3, 0.0, 0.4, 0.28])
 inset.barh(range(len(seg_place)), seg_place.values, color=colors_seg[::-1], edgecolor='white')
@@ -310,9 +303,6 @@ plt.savefig('/home/claude/fig3_correlation.png', dpi=150, bbox_inches='tight')
 plt.close()
 print("Fig3 done")
 
-# ══════════════════════════════════════════════════════════════════════════════
-# FIGURE 4 – Machine Learning Models
-# ══════════════════════════════════════════════════════════════════════════════
 feature_cols = [
     'Attendance_%','Login_Frequency','Time_Spent_Hours','Active_Days_Per_Week',
     'Video_Completion_%','Rewatch_Rate','Quizzes_Attempted','Avg_Quiz_Score',
@@ -373,7 +363,6 @@ for i, (name, res) in enumerate(results.items()):
                  fontweight='bold', color=NAVY, fontsize=11)
     ax.set_xlabel('Predicted'); ax.set_ylabel('Actual')
 
-# 4d. ROC curves
 ax = fig.add_subplot(gs[1, 0])
 for i, (name, res) in enumerate(results.items()):
     fpr, tpr, _ = roc_curve(y_test, res['y_prob'])
@@ -384,7 +373,7 @@ ax.set_title('ROC Curves – All Models', fontweight='bold', color=NAVY)
 ax.set_xlabel('False Positive Rate'); ax.set_ylabel('True Positive Rate')
 ax.legend(fontsize=9); ax.fill_between([0,1],[0,1], alpha=0.05, color='gray')
 
-# 4e. Model comparison bar
+
 ax = fig.add_subplot(gs[1, 1])
 model_names = list(results.keys())
 accs = [results[m]['acc']*100 for m in model_names]
@@ -400,7 +389,7 @@ ax.set_xticks(x); ax.set_xticklabels([m.replace(' ','\n') for m in model_names],
 ax.set_title('Model Comparison', fontweight='bold', color=NAVY)
 ax.legend(); ax.set_ylim(0, 115)
 
-# 4f. Feature importance (Random Forest)
+
 ax = fig.add_subplot(gs[1, 2])
 rf = results['Random Forest']['model']
 fi = pd.Series(rf.feature_importances_, index=feature_cols).sort_values(ascending=True).tail(12)
@@ -413,15 +402,12 @@ plt.savefig('/home/claude/fig4_ml.png', dpi=150, bbox_inches='tight')
 plt.close()
 print("Fig4 done")
 
-# ══════════════════════════════════════════════════════════════════════════════
-# FIGURE 5 – Business Insights & Recommendations
-# ══════════════════════════════════════════════════════════════════════════════
 fig, axes = plt.subplots(2, 3, figsize=(18, 12))
 fig.suptitle('Figure 5 – Key Insights & Business Recommendations',
              fontsize=16, fontweight='bold', color=NAVY)
 plt.subplots_adjust(hspace=0.42, wspace=0.35)
 
-# 5a. Engagement score bucket vs placement rate
+
 ax = axes[0,0]
 df['Eng_Bucket'] = pd.cut(df['Engagement_Score'],
                            bins=[0,40,55,70,100],
@@ -436,7 +422,7 @@ ax.set_title('Engagement Score → Placement Rate', fontweight='bold', color=NAV
 ax.set_ylabel('Placement Rate (%)'); ax.set_ylim(0, 115)
 ax.set_xlabel('Engagement Score Bucket')
 
-# 5b. Skills learned vs placement
+
 ax = axes[0,1]
 skill_place = df.groupby('Skills_Learned_Count')['Placed'].mean() * 100
 ax.bar(skill_place.index, skill_place.values, color=BLUE, edgecolor='white', alpha=0.85)
@@ -447,7 +433,7 @@ ax.set_title('Skills Learned vs Placement Rate', fontweight='bold', color=NAVY)
 ax.set_xlabel('Skills Learned Count'); ax.set_ylabel('Placement Rate (%)')
 ax.legend()
 
-# 5c. Segment x placement heatmap
+
 ax = axes[0,2]
 seg_dept = df.groupby(['Segment','Department'])['Placed'].mean().unstack(fill_value=0) * 100
 sns.heatmap(seg_dept, ax=ax, annot=True, fmt='.0f', cmap='YlOrRd',
@@ -456,7 +442,6 @@ ax.set_title('Placement % by Segment & Dept', fontweight='bold', color=NAVY)
 ax.set_xlabel('Department'); ax.set_ylabel('Segment')
 ax.tick_params(axis='x', rotation=30)
 
-# 5d. Peer discussion vs engagement score
 ax = axes[1,0]
 ax.scatter(df['Peer_Discussion_Count'], df['Engagement_Score'],
            c=df['Placed'].map({1:GREEN,0:ORG}), alpha=0.4, s=20)
@@ -465,7 +450,7 @@ ax.set_xlabel('Peer Discussion Count'); ax.set_ylabel('Engagement Score')
 from matplotlib.patches import Patch
 ax.legend(handles=[Patch(color=GREEN,label='Placed'),Patch(color=ORG,label='Not Placed')], fontsize=9)
 
-# 5e. Project completion vs placement
+
 ax = axes[1,1]
 df['Proj_Bucket'] = pd.cut(df['Project_Completion_Rate'],
                             bins=[0,50,75,100], labels=['<50%','50–75%','>75%'])
@@ -477,7 +462,7 @@ for b in ax.patches:
 ax.set_title('Project Completion vs Placement', fontweight='bold', color=NAVY)
 ax.set_ylabel('Placement Rate (%)'); ax.set_ylim(0, 115)
 
-# 5f. Summary insights text box
+
 ax = axes[1,2]
 ax.axis('off')
 insights = [
