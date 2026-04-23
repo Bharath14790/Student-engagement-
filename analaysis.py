@@ -2,10 +2,10 @@ import pandas as pd
 import streamlit as st
 
 # Page Configuration
-st.set_page_config(page_title="PragyanAI Student Portal", layout="wide")
+st.set_page_config(page_title="Student Portal", layout="wide")
 
 # 1. Load Dataset
-file_name = 'PragyanAI_Student_Data_50k.xlsx'
+file_name = 'student_data.csv'
 
 try:
     # Reading the Student Data sheet from your Excel file
