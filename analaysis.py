@@ -52,12 +52,16 @@ if df is not None:
                 })
                 st.table(metrics_df)
 
-            with col_right:
-                st.subheader("📚 Learning Progress")
-                # Learning Engagement [cite: 30, 36, 40, 47]
-                learning_df = pd.DataFrame({
-                    "Metric": ["Video Completion %", "Quiz Score", "Doubts Raised", "Hackathons"],
-                    "Value": [f"{s['Video_Completion_%']}%", s['Avg_Quiz_Score'], s['Doubts_Raised'], s['Hackathons']]
+                with col_right:
+                    st.subheader("📚 Learning Progress")
+                    learning_df = pd.DataFrame({
+                                "Metric": ["Video Completion %", "Quiz Score", "Doubts Raised", "Hackathons"],
+                                "Value": [
+                                f"{s['Video_Completion_%']}%", 
+                                s['Quiz_Score'],  # Updated to match your CSV
+                                s['Doubts_Raised'], 
+                                s['Hackathons']
+                            ]
                 })
                 st.table(learning_df)
 
