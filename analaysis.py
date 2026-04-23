@@ -32,7 +32,7 @@ YELLOW= '#f59e0b'
 BLUE  = '#3b82f6'
 PAL   = [NAVY, ORG, GREEN, BLUE, YELLOW, '#a78bfa', '#ec4899', '#14b8a6']
 
-df = pd.read_csv('/home/claude/student_data.csv')
+df = pd.read_csv('student_data.csv')
 df['Placed'] = (df['Placement_Status'] == 'Placed').astype(int)
 print("Dataset loaded:", df.shape)
 
